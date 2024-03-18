@@ -3,7 +3,7 @@ session_start();
 header("refresh:2;url=connexion.php");
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <title>Erreur</title>
