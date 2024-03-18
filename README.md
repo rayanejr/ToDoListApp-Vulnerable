@@ -1,51 +1,46 @@
-# Mon Application Web PHP
+[![ToDoList Vulnerable](https://i.postimg.cc/MGL0QQr1/logo.webp)](https://postimg.cc/SXWz0J4K)
 
-Ce projet est une simple application web développée en PHP et dockerisée pour une mise en œuvre facile. Elle utilise MySQL comme système de gestion de base de données et PHPMyAdmin pour une administration facile de la base de données via une interface web.
+# Projet : Gestionnaire de Tâches Personnelles - Sécurité Web
 
-## Architecture
+Ce projet concerne la conception, le développement et l'évaluation de deux versions d'une application de gestion des tâches personnelles : une version vulnérable présentant des failles de sécurité connues, et une version sécurisée intégrant des mesures de protection adéquates.
 
-L'application est composée de trois services principaux :
+## Objectif du Projet
 
-- `web` : le service Apache avec PHP 8.0
-- `db` : le service de base de données MySQL 8.0
-- `phpmyadmin` : une interface web pour la gestion de la base de données MySQL
+Le but est de créer deux variantes de l'application : une version exposée aux attaques pour mettre en lumière les vulnérabilités courantes dans le développement web, et une version renforcée pour démontrer les meilleures pratiques de sécurisation d'une application web.
 
-![Architecture de l'application](<VotrePhoto.png>)
+## Description du Projet
 
-## Prérequis
+- **Conception de l'Application Web** : 
+  - **Fonctionnalités Communes** : Permettre la gestion de tâches personnelles telles que l'ajout, la modification et la suppression de tâches. Les tâches peuvent être marquées comme complétées. Un portail d'authentification est prévu pour accéder à la gestion avancée des tâches.
+    - **Sans authentification** : Visualisation des tâches disponibles.
+    - **Avec authentification** : Capacité à gérer les tâches de manière interactive.
+  - **Technologies Utilisées** : HTML, CSS, JavaScript (frontend), PHP (backend), SQL (gestion des données).
 
-Avant de commencer, assurez-vous que vous avez Docker et Docker Compose installés sur votre machine.
+- **Version Vulnérable** :
+  - Intégration délibérée de vulnérabilités courantes telles que les injections SQL, XSS (Cross-Site Scripting), gestion incorrecte des sessions, problèmes de téléversement de fichiers, etc.
+  - Documentation détaillée des vulnérabilités pour faciliter les tests et l'apprentissage.
 
-- [Installer Docker](https://docs.docker.com/get-docker/)
-- [Installer Docker Compose](https://docs.docker.com/compose/install/)
+- **Version Sécurisée** :
+  - Mise en œuvre de pratiques de sécurité robustes telles que la validation et le nettoyage des entrées, l'escapade des sorties pour prévenir le XSS, et la gestion sécurisée des sessions.
+  
+- **Scénarios d'Attaque et Évaluation** :
+  - Simulation d'attaques visant les vulnérabilités dans la version vulnérable et documentation des résultats.
+  - Tentatives d'attaques contre la version sécurisée pour évaluer l'efficacité des mesures de sécurité.
+  - Comparaison des résultats pour mettre en évidence les différences entre les deux versions.
 
-## Démarrage rapide
+- **Documentation Finale et Comparaison des Résultats** :
+  - Rapport détaillant la conception, le développement, les vulnérabilités, les mesures de sécurité, et l'analyse des attaques simulées.
+  - Évaluation de l'impact des différentes attaques et présentation des recommandations pour améliorer la sécurité des applications web.
 
-1. Clonez ce dépôt sur votre machine locale :
+## Livrables Attendus
 
-   ```bash
-        git clone https://example.com/mon-repo.git
-        cd mon-repo
-   ```
-2. Construisez et lancez les containers Docker :
-    
-    ```bash
-        docker-compose up -d
-   ```
-3. Accédez à l'application web :
+- Code source des deux versions de l'application (disponible sur GitHub).
+- Rapport détaillé comprenant la documentation de toutes les phases du projet.
+- Présentation orale avec démonstration des deux versions de l'application, prévue pour le 20/03/2024.
 
-a. Application Web PHP : http://localhost:8000
-b. PHPMyAdmin : http://localhost:8080
+## Critères d'Évaluation
 
-Utilisation
-Vous pouvez modifier le code de l'application PHP dans le dossier local et voir les changements en direct en actualisant votre navigateur.
-
-Pour interagir avec la base de données, utilisez PHPMyAdmin à l'adresse mentionnée ci-dessus.
-
-4. Arrêt et nettoyage
-Pour arrêter les services et nettoyer les ressources, exécutez :
-
-    ```bash
-        docker-compose down -v
-        Cela arrêtera et supprimera les conteneurs, les réseaux par défaut, et le volume de la base de données.
-    ```
+- Intégration correcte et démontrable des vulnérabilités dans la version exposée.
+- Implémentation effective et fonctionnelle des mesures de sécurité dans la version sécurisée.
+- Qualité et précision des scénarios d'attaque, des résultats obtenus et de leur analyse.
+- Clarté, exhaustivité et pertinence de la documentation et des recommandations fournies.
