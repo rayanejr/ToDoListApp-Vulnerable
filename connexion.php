@@ -1,7 +1,7 @@
 <?php
 session_start();
 if (isset($_POST["bouton"])) {
-    $id = mysqli_connect("db", "user", "password", "bd");
+    $id = mysqli_connect("127.0.0.1:3307", "root", "", "bd");
     $pseudo = $_POST["pseudo"]; 
     $mdp = $_POST["mdp"]; 
     $req = "SELECT * FROM users WHERE pseudo='$pseudo' AND mdp='$mdp'";
@@ -10,7 +10,7 @@ if (isset($_POST["bouton"])) {
         $_SESSION["pseudo"] = $pseudo; 
         header("location:dashboard.php");
     } else {
-        header("location:erreur.php");
+        $_SESSION["erreur_connexion"] = "Pseudo ou mot de passe incorrect.";
     }
 }
 ?>
@@ -25,6 +25,10 @@ if (isset($_POST["bouton"])) {
 <body class="cyber-theme">
     <div class="container">
         <h1>Connexion</h1>
+        <?php if(isset($_SESSION["erreur_connexion"])): ?>
+            <p style="color: red;"><?php echo $_SESSION["erreur_connexion"]; ?></p>
+            <?php unset($_SESSION["erreur_connexion"]); ?>
+        <?php endif; ?>
         <form action="" method="post">
             Pseudo*: <input type="text" name="pseudo" required><br><br>
             Mot de passe*: <input type="password" name="mdp" required><br><br>
