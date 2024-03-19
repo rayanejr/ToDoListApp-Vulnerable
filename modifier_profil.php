@@ -5,7 +5,7 @@ if (!isset($_SESSION['pseudo'])) {
     exit();
 }
 
-$id = mysqli_connect("db", "user", "password", "bd");
+$id = mysqli_connect("127.0.0.1:3307", "root", "", "bd");
 $pseudo = $_SESSION['pseudo'];
 $message = ''; 
 
@@ -29,15 +29,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (!empty($_FILES['photo']['name'])) {
         $target_dir = "uploads/";
         $target_file = $target_dir . basename($_FILES['photo']['name']);
-        $check = getimagesize($_FILES['photo']['tmp_name']);
-        if ($check !== false) {
-            if (move_uploaded_file($_FILES['photo']['tmp_name'], $target_file)) {
-                $photoUpdate = ", photo='$target_file'";
-            } else {
-                $message .= 'Erreur lors du téléchargement de la photo.<br>';
-            }
+        if (move_uploaded_file($_FILES['photo']['tmp_name'], $target_file)) {
+            $photoUpdate = ", photo='$target_file'";
         } else {
-            $message .= 'Le fichier n\'est pas une image.<br>';
+            $message .= 'Erreur lors du téléchargement de la photo.<br>';
         }
     }
 
