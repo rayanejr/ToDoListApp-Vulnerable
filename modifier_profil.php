@@ -5,7 +5,7 @@ if (!isset($_SESSION['pseudo'])) {
     exit();
 }
 
-$id = mysqli_connect("127.0.0.1:3307", "root", "", "bd");
+$id = mysqli_connect("db", "user", "password", "bd");
 $pseudo = $_SESSION['pseudo'];
 $message = ''; 
 

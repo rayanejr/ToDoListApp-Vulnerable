@@ -1,7 +1,7 @@
 <?php
 session_start();
 if (isset($_POST["bouton"])) {
-    $id = mysqli_connect("127.0.0.1:3307", "root", "", "bd");
+    $id = mysqli_connect("db", "user", "password", "bd");
     $pseudo = $_POST["pseudo"]; 
     $mdp = $_POST["mdp"]; 
     $req = "SELECT * FROM users WHERE pseudo='$pseudo' AND mdp='$mdp'";
