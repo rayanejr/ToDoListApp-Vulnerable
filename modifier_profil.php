@@ -1,65 +1,59 @@
 <?php
-require 'functions.php';
 session_start();
 if (!isset($_SESSION['pseudo'])) {
     header('Location: connexion.php');
     exit();
 }
 
-$connection = safeConnect();
+$id = mysqli_connect("127.0.0.1:3307", "root", "", "bd");
 $pseudo = $_SESSION['pseudo'];
-$message = '';
+$message = ''; 
 
-$user = ['nom' => '', 'prenom' => '', 'mail' => '', 'photo' => ''];
+$user = ['nom' => '', 'prenom' => '', 'mail' => '', 'photo' => '']; 
 
-$stmt = $connection->prepare("SELECT nom, prenom, mail, photo FROM users WHERE pseudo=?");
-$stmt->bind_param("s", $pseudo);
-$stmt->execute();
-$result = $stmt->get_result();
-if ($fetchedUser = $result->fetch_assoc()) {
-    $user = $fetchedUser;
+$req = "SELECT nom, prenom, mail, photo FROM users WHERE pseudo='$pseudo'";
+$result = mysqli_query($id, $req);
+if ($result) {
+    $fetchedUser = mysqli_fetch_assoc($result);
+    if ($fetchedUser) {
+        $user = $fetchedUser;
+    }
 }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $nom = sanitizeInput($_POST['nom'], $connection);
-    $prenom = sanitizeInput($_POST['prenom'], $connection);
-    $mail = sanitizeInput($_POST['mail'], $connection);
+    $nom = mysqli_real_escape_string($id, $_POST['nom']);
+    $prenom = mysqli_real_escape_string($id, $_POST['prenom']);
+    $mail = mysqli_real_escape_string($id, $_POST['mail']);
     $photoUpdate = '';
 
     if (!empty($_FILES['photo']['name'])) {
         $target_dir = "uploads/";
         $target_file = $target_dir . basename($_FILES['photo']['name']);
-        $check = getimagesize($_FILES['photo']['tmp_name']);
-        if ($check !== false) {
-            if (move_uploaded_file($_FILES['photo']['tmp_name'], $target_file)) {
-                $photoUpdate = ", photo='$target_file'";
-            } else {
-                $message .= 'Erreur lors du téléchargement de la photo.<br>';
-            }
+        if (move_uploaded_file($_FILES['photo']['tmp_name'], $target_file)) {
+            $photoUpdate = ", photo='$target_file'";
         } else {
-            $message .= 'Le fichier n\'est pas une image.<br>';
+            $message .= 'Erreur lors du téléchargement de la photo.<br>';
         }
     }
 
-    $updateQuery = "UPDATE users SET nom=?, prenom=?, mail=? $photoUpdate WHERE pseudo=?";
-    $stmt = $connection->prepare($updateQuery);
-    $stmt->bind_param("ssss", $nom, $prenom, $mail, $pseudo);
+    $updateQuery = "UPDATE users SET nom='$nom', prenom='$prenom', mail='$mail' $photoUpdate WHERE pseudo='$pseudo'";
 
     if (!empty($_POST['newPassword']) && !empty($_POST['confirmPassword'])) {
         if ($_POST['newPassword'] === $_POST['confirmPassword']) {
-            $newPassword = password_hash($_POST['newPassword'], PASSWORD_DEFAULT);
-            $updateQuery = "UPDATE users SET nom=?, prenom=?, mail=?, mdp=? $photoUpdate WHERE pseudo=?";
-            $stmt = $connection->prepare($updateQuery);
-            $stmt->bind_param("sssss", $nom, $prenom, $mail, $newPassword, $pseudo);
+            $newPassword = mysqli_real_escape_string($id, $_POST['newPassword']);
+            
+            $updateQuery = "UPDATE users SET nom='$nom', prenom='$prenom', mail='$mail', mdp='$newPassword' $photoUpdate WHERE pseudo='$pseudo'";
         } else {
             $message .= 'Les mots de passe ne correspondent pas.<br>';
         }
     }
 
-    if (!$message && $stmt->execute()) {
-        $message = 'Votre profil a été mis à jour avec succès.';
-    } else {
-        $message .= 'Erreur lors de la mise à jour du profil.';
+    if (!$message) { 
+        if (mysqli_query($id, $updateQuery)) {
+            $message = 'Votre profil a été mis à jour avec succès.';
+        } else {
+            $message = 'Erreur lors de la mise à jour du profil.';
+        }
     }
 }
 ?>
@@ -78,9 +72,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <div class="alert"><?php echo $message; ?></div>
         <?php endif; ?>
         <form action="" method="post" enctype="multipart/form-data">
-            Nom: <input type="text" name="nom" value="<?php echo htmlspecialchars($user['nom']); ?>"><br>
-            Prénom: <input type="text" name="prenom" value="<?php echo htmlspecialchars($user['prenom']); ?>"><br>
-            Email: <input type="email" name="mail" value="<?php echo htmlspecialchars($user['mail']); ?>"><br>
+            Nom: <input type="text" name="nom" value="<?php echo htmlspecialchars($user['nom'] ?? ''); ?>"><br>
+            Prénom: <input type="text" name="prenom" value="<?php echo htmlspecialchars($user['prenom'] ?? ''); ?>"><br>
+            Email: <input type="email" name="mail" value="<?php echo htmlspecialchars($user['mail'] ?? ''); ?>"><br>
             Nouveau mot de passe: <input type="password" name="newPassword"><br>
             Confirmer le mot de passe: <input type="password" name="confirmPassword"><br>
             Photo: <input type="file" name="photo" accept="image/*"><br>
@@ -89,7 +83,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <?php if (!empty($user['photo'])): ?>
             <div>
                 <h2>Photo actuelle :</h2>
-                <img src="<?php echo htmlspecialchars($user['photo']); ?>" alt="Photo de profil" style="max-width:200px;">
+                <img src="<?php echo htmlspecialchars($user['photo'] ?? ''); ?>" alt="Photo de profil" style="max-width:200px;">
             </div>
         <?php endif; ?>
     </div>
