@@ -5,7 +5,6 @@ if (!isset($_SESSION['pseudo'])) {
     exit();
 }
 
-// Utilisez les mêmes paramètres de connexion que votre script d'inscription
 $id = mysqli_connect("db", "user", "password", "bd");
 if (!$id) {
     die("Erreur de connexion : " . mysqli_connect_error());
@@ -47,7 +46,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (!empty($_POST['newPassword']) && !empty($_POST['confirmPassword'])) {
         if ($_POST['newPassword'] === $_POST['confirmPassword']) {
             $newPassword = mysqli_real_escape_string($id, $_POST['newPassword']);
-            // Attention : stocker les mots de passe en clair est une mauvaise pratique !
             $updateQuery .= ", mdp='$newPassword'";
         } else {
             $message .= 'Les mots de passe ne correspondent pas.<br>';
