@@ -5,7 +5,13 @@ if (!isset($_SESSION['pseudo'])) {
     exit();
 }
 
-$id = mysqli_connect("127.0.0.1:3307", "root", "", "bd");
+// Utilisez les mêmes paramètres de connexion que votre script d'inscription
+$id = mysqli_connect("db", "user", "password", "bd");
+if (!$id) {
+    die("Erreur de connexion : " . mysqli_connect_error());
+}
+mysqli_set_charset($id, "utf8");
+
 $pseudo = $_SESSION['pseudo'];
 $message = ''; 
 
@@ -41,19 +47,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (!empty($_POST['newPassword']) && !empty($_POST['confirmPassword'])) {
         if ($_POST['newPassword'] === $_POST['confirmPassword']) {
             $newPassword = mysqli_real_escape_string($id, $_POST['newPassword']);
-            
-            $updateQuery = "UPDATE users SET nom='$nom', prenom='$prenom', mail='$mail', mdp='$newPassword' $photoUpdate WHERE pseudo='$pseudo'";
+            // Attention : stocker les mots de passe en clair est une mauvaise pratique !
+            $updateQuery .= ", mdp='$newPassword'";
         } else {
             $message .= 'Les mots de passe ne correspondent pas.<br>';
         }
     }
 
-    if (!$message) { 
-        if (mysqli_query($id, $updateQuery)) {
-            $message = 'Votre profil a été mis à jour avec succès.';
-        } else {
-            $message = 'Erreur lors de la mise à jour du profil.';
-        }
+    if (empty($message) && mysqli_query($id, $updateQuery)) {
+        $message = 'Votre profil a été mis à jour avec succès.';
+    } elseif (empty($message)) {
+        $message = 'Erreur lors de la mise à jour du profil.';
     }
 }
 ?>
@@ -72,12 +76,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <div class="alert"><?php echo $message; ?></div>
         <?php endif; ?>
         <form action="" method="post" enctype="multipart/form-data">
-            Nom: <input type="text" name="nom" value="<?php echo htmlspecialchars($user['nom'] ?? ''); ?>"><br>
-            Prénom: <input type="text" name="prenom" value="<?php echo htmlspecialchars($user['prenom'] ?? ''); ?>"><br>
-            Email: <input type="email" name="mail" value="<?php echo htmlspecialchars($user['mail'] ?? ''); ?>"><br>
-            Nouveau mot de passe: <input type="password" name="newPassword"><br>
-            Confirmer le mot de passe: <input type="password" name="confirmPassword"><br>
-            Photo: <input type="file" name="photo" accept="image/*"><br>
+            Nom: <input type="text" name="nom" value="<?php echo htmlspecialchars($user['nom'] ?? ''); ?>"><br><br>
+            Prénom: <input type="text" name="prenom" value="<?php echo htmlspecialchars($user['prenom'] ?? ''); ?>"><br><br>
+            Email: <input type="email" name="mail" value="<?php echo htmlspecialchars($user['mail'] ?? ''); ?>"><br><br>
+            Nouveau mot de passe: <input type="password" name="newPassword"><br><br>
+            Confirmer le mot de passe: <input type="password" name="confirmPassword"><br><br>
+            Photo: <input type="file" name="photo" accept="image/*"><br><br>
             <input type="submit" value="Mettre à jour">
         </form>
         <?php if (!empty($user['photo'])): ?>

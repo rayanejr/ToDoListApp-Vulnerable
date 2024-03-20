@@ -1,9 +1,12 @@
 <?php
 session_start();
 if (isset($_POST["bouton"])) {
-    $id = mysqli_connect("127.0.0.1:3307", "root", "", "bd");
-    $pseudo = $_POST["pseudo"]; 
-    $mdp = $_POST["mdp"]; 
+    $id = mysqli_connect("db", "user", "password", "bd");
+    mysqli_set_charset($id, "utf8");
+
+    $pseudo = mysqli_real_escape_string($id, $_POST["pseudo"]); 
+    $mdp = mysqli_real_escape_string($id, $_POST["mdp"]); 
+
     $req = "SELECT * FROM users WHERE pseudo='$pseudo' AND mdp='$mdp'";
     $resultat = mysqli_query($id, $req);
     if (mysqli_num_rows($resultat) > 0) {
